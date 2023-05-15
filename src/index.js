@@ -41,15 +41,33 @@ const URL = (API_URL + createSearchParams());
         console.log(createSearchParams)
   
 
+// funkcja tworząca element informacji
+const createInfoItem = (label, value) => {
+  const itemEl = document.createElement('div');
+  itemEl.classList.add('info-item');
+
+  const labelEl = document.createElement('span');
+  labelEl.classList.add('label');
+  labelEl.textContent = label;
+
+  const valueEl = document.createElement('span');
+  valueEl.classList.add('value');
+  valueEl.textContent = value;
+
+  itemEl.append(labelEl, valueEl);
+
+  return itemEl;
+};
+
+
         //obsługa formularza 
-        function formElSubmit(event) {
-            event.preventDefault();
-            page = 1;
-            searchQuery = searchInput.value;
-            resultsContainer.innerHTML = '';
-            updateLoadMoreBtn(0);
-            fetchImages();
-        }
+const formElSubmit = (event) => {
+    event.preventDefault();
+    currentPage = 1;
+    querySearch = searchInput.value;
+    galleryEl.innerHTML = '';
+    fetchImages();
+};
 
 
         // funkcja wyszukująca obrazy
@@ -115,9 +133,10 @@ const URL = (API_URL + createSearchParams());
             });
     
         };
-        formEl.addEventListener('submit', formElSubmit);
+        
 
-        function formElSubmit(event) {
+function formElSubmitEV(event) {
+            galleryEl.innerHTML = '';
             event.preventDefault();
             page = 1;
             searchQuery = searchInput.value;
@@ -127,6 +146,8 @@ const URL = (API_URL + createSearchParams());
             loadMoreEl.style.margin = '0 auto';
             loadMoreEl.style.display = 'block';
         }
-        //obsługa zdarzenia
-        loadMoreEl.addEventListener('click', formElSubmit);
-    
+//obsługa zdarzenia
+formEl.addEventListener('submit', formElSubmit);
+loadMoreEl.addEventListener('click', formElSubmit);
+        
+
