@@ -22,125 +22,118 @@ let totalPages = 0;
 //parametry wyszukiwanych obrazów
 
 const createSearchParams = () => {
-  const params = new URLSearchParams({
-    key: API_KEY,
-    q: querySearch,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    page: currentPage,
-    per_page: LIMIT,
-  });
-  
-  return params.toString();
+    const params = new URLSearchParams({
+        key: API_KEY,
+        q: querySearch,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        page: currentPage,
+        per_page: LIMIT,
+    });
+
+    return params.toString();
 };
 
-const URL = (API_URL + createSearchParams());
-        
 
-        console.log(createSearchParams)
-  
 
 // funkcja tworząca informacje o zdjęciu
 const createInfoItem = (label, value) => {
-  const itemEl = document.createElement('div');
-  itemEl.classList.add('info-item');
+    const itemEl = document.createElement('div');
+    itemEl.classList.add('info-item');
 
-  const labelEl = document.createElement('span');
-  labelEl.classList.add('label');
-  labelEl.textContent = label;
+    const labelEl = document.createElement('span');
+    labelEl.classList.add('label');
+    labelEl.textContent = label;
 
-  const valueEl = document.createElement('span');
-  valueEl.classList.add('value');
-  valueEl.textContent = value;
+    const valueEl = document.createElement('span');
+    valueEl.classList.add('value');
+    valueEl.textContent = value;
 
-  itemEl.append(labelEl, valueEl);
+    itemEl.append(labelEl, valueEl);
 
-  return itemEl;
+    return itemEl;
 };
 
+const URL = (API_URL + createSearchParams());
 
-        //obsługa formularza 
+// funkcja wyszukująca obrazy
+function fetchImages() {
+
+    axios.get(URL)
+        .then(response => {
+            const data = response.data;
+
+
+            if (data.totalHits > 0) {
+                render(data.hits);
+                Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+                totalPages = Math.ceil(data.totalHits / LIMIT);
+                currentPage++;
+
+                if (currentPage <= totalPages) {
+                    loadMoreEl.style.display = 'block';
+                } else {
+                    loadMoreEl.style.display = 'none';
+                }
+            } else {
+                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                loadMoreEl.style.display = 'none';
+            }
+        })
+        .catch(error => console.log(error));
+};
+
+console.log(fetchImages)
+
+//obsługa formularza 
 const formElSubmit = (event) => {
     galleryEl.innerHTML = '';
-            event.preventDefault();
-            page = 1;
-            searchQuery = searchInput.value;
-            fetchImages();
-            loadMoreEl.style.display = 'none';
-            loadMoreEl.style.textAlign = 'center';
-            loadMoreEl.style.margin = '0 auto';
-            loadMoreEl.style.display = 'block';
+    event.preventDefault();
+    page = 1;
+    searchQuery = searchInput.value;
+    fetchImages();
+    loadMoreEl.style.display = 'none';
+    loadMoreEl.style.textAlign = 'center';
+    loadMoreEl.style.margin = '0 auto';
+    loadMoreEl.style.display = 'block';
+};
+//renderowanie zdjęcia
+
+const render = (hits) => {
+    galleryEl.innerHTML = '';
+    hits.forEach(hit => {
+        const cardEl = document.createElement('div');
+        cardEl.classList.add('photo');
+
+        const imageLinkEl = document.createElement('a');
+        imageLinkEl.classList.add('img-style');
+        imageLinkEl.href = hit.webformatURL;
+        imageLinkEl.title = hit.tags;
+
+        const imageEl = document.createElement('img');
+        imageEl.src = hit.webformatURL;
+        imageEl.alt = hit.tags;
+        imageEl.loading = 'lazy';
+        imageEl.classList.add('photo-image');
+
+        const infoEl = document.createElement('div');
+        infoEl.classList.add('info');
+
+        const likesEl = createInfoItem('Likes', hit.likes);
+        const viewsEl = createInfoItem('Views', hit.views);
+        const commentsEl = createInfoItem('Comments', hit.comments);
+        const downloadsEl = createInfoItem('Downloads', hit.downloads);
+
+        infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
+
+        cardEl.append(imageEl, infoEl);
+        galleryEl.append(cardEl);
+    });
+
 };
 
-
-        // funkcja wyszukująca obrazy
-
-        function fetchImages() {
-  
-            axios.get(URL)
-                .then(response => {
-                    const data = response.data;
-      
-                    if (data.totalHits > 0) {
-                        render(data.hits);
-                        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-                        totalPages = Math.ceil(data.totalHits / LIMIT);
-                        currentPage++;
-
-                        if (currentPage <= totalPages) {
-                            loadMoreEl.style.display = 'block';
-                        } else {
-                            loadMoreEl.style.display = 'none';
-                        }
-                    } else {
-                        Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-                        loadMoreEl.style.display = 'none';
-                    }
-                })
-                .catch(error => console.log(error));
-        };
-
-        console.log(fetchImages)
-
-        //renderowanie zdjęcia
-
-        const render = (hits) => {
-            galleryEl.innerHTML = '';
-            hits.forEach(hit => {
-                const cardEl = document.createElement('div');
-                cardEl.classList.add('photo');
-
-                const imageLinkEl = document.createElement('a');
-                imageLinkEl.classList.add('img-style');
-                imageLinkEl.href = hit.webformatURL;
-                imageLinkEl.title = hit.tags;
-        
-                const imageEl = document.createElement('img');
-                imageEl.src = hit.webformatURL;
-                imageEl.alt = hit.tags;
-                imageEl.loading = 'lazy';
-                imageEl.classList.add('photo-image');
-        
-                const infoEl = document.createElement('div');
-                infoEl.classList.add('info');
-
-                const likesEl = createInfoItem('Likes', hit.likes);
-                const viewsEl = createInfoItem('Views', hit.views);
-                const commentsEl = createInfoItem('Comments', hit.comments);
-                const downloadsEl = createInfoItem('Downloads', hit.downloads);
-
-                infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
-
-                cardEl.append(imageEl, infoEl);
-                galleryEl.append(cardEl);
-            });
-    
-        };
-        
 
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
 loadMoreEl.addEventListener('click', formElSubmit);
-        
-
