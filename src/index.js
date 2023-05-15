@@ -62,11 +62,15 @@ const createInfoItem = (label, value) => {
 
         //obsługa formularza 
 const formElSubmit = (event) => {
-    event.preventDefault();
-    currentPage = 1;
-    querySearch = searchInput.value;
     galleryEl.innerHTML = '';
-    fetchImages();
+            event.preventDefault();
+            page = 1;
+            searchQuery = searchInput.value;
+            fetchImages();
+            loadMoreEl.style.display = 'none';
+            loadMoreEl.style.textAlign = 'center';
+            loadMoreEl.style.margin = '0 auto';
+            loadMoreEl.style.display = 'block';
 };
 
 
@@ -135,17 +139,6 @@ const formElSubmit = (event) => {
         };
         
 
-function formElSubmitEV(event) {
-            galleryEl.innerHTML = '';
-            event.preventDefault();
-            page = 1;
-            searchQuery = searchInput.value;
-            fetchImages();
-            loadMoreEl.style.display = 'none';
-            loadMoreEl.style.textAlign = 'center';
-            loadMoreEl.style.margin = '0 auto';
-            loadMoreEl.style.display = 'block';
-        }
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
 loadMoreEl.addEventListener('click', formElSubmit);
