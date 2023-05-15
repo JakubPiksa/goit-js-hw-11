@@ -12,7 +12,7 @@ const loadMoreEl = document.getElementById('load-more');
 const API_KEY = '36429050-2dd6aecce9383c2193efec34d';
 const API_URL = 'https://pixabay.com/api/'
 const LIMIT = 40;
-const URL = 'API_URL + createSearchParams()';
+const URL = `https://pixabay.com/api/?${createSearchParams()}`
 
 // kontrola paginacji i zapytań
 let querySearch = '';
@@ -20,17 +20,21 @@ let currentPage = 1;
 let totalPages = 0;
 
 
+//parametry wyszukiwanych obrazów
 
-const createSearchParams = () =>
-  new URLSearchParams({
+const createSearchParams = () => {
+  const params = new URLSearchParams({
     key: API_KEY,
-    q: querySearch,
+    q: currentQuery,
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
     page: currentPage,
     per_page: LIMIT,
   });
+  
+  return params.toString();
+};
 
 console.log(createSearchParams)
   
@@ -57,30 +61,29 @@ function fetchImages() {
 console.log(fetchImages)
 
 const renderImages = (images) => {
-  galleryEl.innerHTML = '';
+    galleryEl.innerHTML = '';
   
-  images.forEach(image => {
-    const cardEl = document.createElement('div');
-    cardEl.classList.add('photo-card');
+    images.forEach(image => {
+        const cardEl = document.createElement('div');
+        cardEl.classList.add('photo-card');
     
-    const imageEl = document.createElement('img');
-    imageEl.src = image.webformatURL;
-    imageEl.alt = image.tags;
-    imageEl.loading = 'lazy';
+        const imageEl = document.createElement('img');
+        imageEl.src = image.webformatURL;
+        imageEl.alt = image.tags;
+        imageEl.loading = 'lazy';
     
-    const infoEl = document.createElement('div');
-    infoEl.classList.add('info');
+        const infoEl = document.createElement('div');
+        infoEl.classList.add('info');
     
-    const likesEl = createInfoItem('Likes', image.likes);
-    const viewsEl = createInfoItem('Views', image.views);
-    const commentsEl = createInfoItem('Comments', image.comments);
-    const downloadsEl = createInfoItem('Downloads', image.downloads);
+        const likesEl = createInfoItem('Likes', image.likes);
+        const viewsEl = createInfoItem('Views', image.views);
+        const commentsEl = createInfoItem('Comments', image.comments);
+        const downloadsEl = createInfoItem('Downloads', image.downloads);
     
-    infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
+        infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
     
-    cardEl.append(imageEl, infoEl);
-    galleryEl.append(cardEl);
-  });
+        cardEl.append(imageEl, infoEl);
+        galleryEl.append(cardEl);
+    });
     
-    const lightbox = new SimpleLightbox('.gallery a');
-  lightbox.refresh();
+    

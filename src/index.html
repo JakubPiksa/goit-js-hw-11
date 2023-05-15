@@ -8,20 +8,24 @@
     <title>wyszukiwarka obrazów</title>
   </head>
   <body>
-    <form class="search-form" id="search-form">
-      <input
-        id="search-input"
-        type="text"
-        name="searchQuery"
-        autocomplete="off"
-        placeholder="Search images..."
-      />
-      <button type="submit">Search</button>
-    </form>
+    <div class="container">
+      <form class="search-form" id="search-form">
+        <input
+          id="search-input"
+          type="text"
+          name="searchQuery"
+          autocomplete="off"
+          placeholder="Search images..."
+        />
+        <button type="submit">Search</button>
+      </form>
 
-    <div class="image-gallery" id="image-gallery"></div>
+      <div class="gallery" id="image-gallery">
+        <!-- Tu pojawi się zdjęcie -->
+      </div>
 
-    <button type="button" id="load-more">Load more</button>
+      <button type="button" class="load-more" id="load-more">Load more</button>
+    </div>
     <script src="index.js" type="module"></script>
   </body>
 </html>
