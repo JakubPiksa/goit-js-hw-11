@@ -86,4 +86,4 @@ const renderImages = (images) => {
         galleryEl.append(cardEl);
     });
     
-    
+};
