@@ -10,9 +10,8 @@ const searchInput = document.getElementById('search-input');
 const galleryEl = document.getElementById('image-gallery');
 const loadMoreEl = document.getElementById('load-more');
 const API_KEY = '36429050-2dd6aecce9383c2193efec34d';
-const API_URL = 'https://pixabay.com/api/'
+const API_URL = 'https://pixabay.com/api/?'
 const LIMIT = 40;
-const URL = `https://pixabay.com/api/?${createSearchParams()}`
 
 // kontrola paginacji i zapytań
 let querySearch = '';
@@ -25,7 +24,7 @@ let totalPages = 0;
 const createSearchParams = () => {
   const params = new URLSearchParams({
     key: API_KEY,
-    q: currentQuery,
+    q: querySearch,
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
@@ -36,54 +35,98 @@ const createSearchParams = () => {
   return params.toString();
 };
 
-console.log(createSearchParams)
+const URL = (API_URL + createSearchParams());
+        
+
+        console.log(createSearchParams)
   
 
-// funkcja wyszukująca obrazy
+        //obsługa formularza 
+        function formElSubmit(event) {
+            event.preventDefault();
+            page = 1;
+            searchQuery = searchInput.value;
+            resultsContainer.innerHTML = '';
+            updateLoadMoreBtn(0);
+            fetchImages();
+        }
 
-function fetchImages() {
+
+        // funkcja wyszukująca obrazy
+
+        function fetchImages() {
   
-  axios.get(URL)
-  .then(response => {
-    const data = response.data;
-      if (parseInt(data.totalHits) > 0) {
-        render(data.hits);
-        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      } else {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      }
-    })
-    .catch(error => console.log(error));
-}
+            axios.get(URL)
+                .then(response => {
+                    const data = response.data;
+      
+                    if (data.totalHits > 0) {
+                        render(data.hits);
+                        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+                        totalPages = Math.ceil(data.totalHits / LIMIT);
+                        currentPage++;
 
-console.log(fetchImages)
+                        if (currentPage <= totalPages) {
+                            loadMoreEl.style.display = 'block';
+                        } else {
+                            loadMoreEl.style.display = 'none';
+                        }
+                    } else {
+                        Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                        loadMoreEl.style.display = 'none';
+                    }
+                })
+                .catch(error => console.log(error));
+        };
 
-const renderImages = (images) => {
-    galleryEl.innerHTML = '';
-  
-    images.forEach(image => {
-        const cardEl = document.createElement('div');
-        cardEl.classList.add('photo-card');
+        console.log(fetchImages)
+
+        //renderowanie zdjęcia
+
+        const render = (hits) => {
+            galleryEl.innerHTML = '';
+            hits.forEach(hit => {
+                const cardEl = document.createElement('div');
+                cardEl.classList.add('photo');
+
+                const imageLinkEl = document.createElement('a');
+                imageLinkEl.classList.add('img-style');
+                imageLinkEl.href = hit.webformatURL;
+                imageLinkEl.title = hit.tags;
+        
+                const imageEl = document.createElement('img');
+                imageEl.src = hit.webformatURL;
+                imageEl.alt = hit.tags;
+                imageEl.loading = 'lazy';
+                imageEl.classList.add('photo-image');
+        
+                const infoEl = document.createElement('div');
+                infoEl.classList.add('info');
+
+                const likesEl = createInfoItem('Likes', hit.likes);
+                const viewsEl = createInfoItem('Views', hit.views);
+                const commentsEl = createInfoItem('Comments', hit.comments);
+                const downloadsEl = createInfoItem('Downloads', hit.downloads);
+
+                infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
+
+                cardEl.append(imageEl, infoEl);
+                galleryEl.append(cardEl);
+            });
     
-        const imageEl = document.createElement('img');
-        imageEl.src = image.webformatURL;
-        imageEl.alt = image.tags;
-        imageEl.loading = 'lazy';
+        };
+        formEl.addEventListener('submit', formElSubmit);
+
+        function formElSubmit(event) {
+            event.preventDefault();
+            page = 1;
+            searchQuery = searchInput.value;
+            fetchImages();
+            loadMoreEl.style.display = 'none';
+            loadMoreEl.style.textAlign = 'center';
+            loadMoreEl.style.margin = '0 auto';
+            loadMoreEl.style.display = 'block';
+        }
+        //obsługa zdarzenia
+        loadMoreEl.addEventListener('click', formElSubmit);
     
-        const infoEl = document.createElement('div');
-        infoEl.classList.add('info');
-    
-        const likesEl = createInfoItem('Likes', image.likes);
-        const viewsEl = createInfoItem('Views', image.views);
-        const commentsEl = createInfoItem('Comments', image.comments);
-        const downloadsEl = createInfoItem('Downloads', image.downloads);
-    
-        infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
-    
-        cardEl.append(imageEl, infoEl);
-        galleryEl.append(cardEl);
-    });
-    
-};
