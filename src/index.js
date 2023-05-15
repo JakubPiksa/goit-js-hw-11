@@ -41,7 +41,7 @@ const URL = (API_URL + createSearchParams());
         console.log(createSearchParams)
   
 
-// funkcja tworząca element informacji
+// funkcja tworząca informacje o zdjęciu
 const createInfoItem = (label, value) => {
   const itemEl = document.createElement('div');
   itemEl.classList.add('info-item');
