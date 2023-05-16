@@ -14,7 +14,7 @@ const API_URL = 'https://pixabay.com/api/?'
 const LIMIT = 40;
 
 // kontrola paginacji i zapytań
-let querySearch = '';
+let searchQuery = '';
 let currentPage = 1;
 let totalPages = 0;
 
@@ -24,7 +24,7 @@ let totalPages = 0;
 const createSearchParams = () => {
     const params = new URLSearchParams({
         key: API_KEY,
-        q: querySearch,
+        q: searchQuery,
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
@@ -55,10 +55,10 @@ const createInfoItem = (label, value) => {
     return itemEl;
 };
 
-const URL = (API_URL + createSearchParams());
 
 // funkcja wyszukująca obrazy
 function fetchImages() {
+const URL = (API_URL + createSearchParams());
 
     axios.get(URL)
         .then(response => {
@@ -104,10 +104,10 @@ const render = (hits) => {
     galleryEl.innerHTML = '';
     hits.forEach(hit => {
         const cardEl = document.createElement('div');
-        cardEl.classList.add('photo');
+        cardEl.classList.add('photo-card');
 
         const imageLinkEl = document.createElement('a');
-        imageLinkEl.classList.add('img-style');
+        imageLinkEl.classList.add('img-link');
         imageLinkEl.href = hit.webformatURL;
         imageLinkEl.title = hit.tags;
 
@@ -125,6 +125,11 @@ const render = (hits) => {
         const commentsEl = createInfoItem('Comments', hit.comments);
         const downloadsEl = createInfoItem('Downloads', hit.downloads);
 
+        imageLinkEl.appendChild(imageEl);
+        cardEl.appendChild(imageLinkEl);
+
+        
+        
         infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
 
         cardEl.append(imageEl, infoEl);
@@ -137,3 +142,5 @@ const render = (hits) => {
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
 loadMoreEl.addEventListener('click', formElSubmit);
+
+

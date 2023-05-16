@@ -27,6 +27,11 @@ body {
   gap: 10px;
 }
 
+.img-link {
+  cursor: pointer;
+  border: #212121 10px solid;
+}
+
 .photo {
   padding: 10px;
 }
