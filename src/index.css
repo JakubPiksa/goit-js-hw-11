@@ -1,4 +1,4 @@
-/* * {
+* {
   box-sizing: border-box;
 }
 
@@ -11,37 +11,3 @@ body {
   color: #212121;
   line-height: 1.5;
 }
-
-.container {
-  border: blue dotted 1px;
-}
-
-#search-form {
-  border: red solid 2px;
-}
-
-.gallery {
-  border: green solid 2px;
-  display: grid;
-  gap: 10px;
-}
-
-.img-link {
-  cursor: pointer;
-  border: #212121 10px solid;
-}
-
-.photo {
-  padding: 10px;
-}
-
-.photo-image {
-  max-width: 20%;
-}
-
-.info-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-} */

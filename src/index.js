@@ -11,13 +11,13 @@ const galleryEl = document.getElementById('image-gallery');
 const loadMoreEl = document.getElementById('load-more');
 const API_KEY = '36429050-2dd6aecce9383c2193efec34d';
 const API_URL = 'https://pixabay.com/api/?'
-const LIMIT = 40;
+
 
 // kontrola paginacji i zapytań
 let searchQuery = '';
 let currentPage = 1;
 let totalPages = 0;
-
+let limit = 40;
 
 //parametry wyszukiwanych obrazów
 
@@ -29,7 +29,7 @@ const createSearchParams = () => {
         orientation: 'horizontal',
         safesearch: true,
         page: currentPage,
-        per_page: LIMIT,
+        per_page: limit,
     });
 
     return params.toString();
@@ -58,30 +58,30 @@ const createInfoItem = (label, value) => {
 
 // funkcja wyszukująca obrazy
 function fetchImages() {
-const URL = (API_URL + createSearchParams());
+const URL = API_URL + createSearchParams();
 
-    axios.get(URL)
-        .then(response => {
+  axios.get(URL)
+    .then(response => {
             const data = response.data;
 
 
             if (data.totalHits > 0) {
                 render(data.hits);
                 Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-                totalPages = Math.ceil(data.totalHits / LIMIT);
+                totalPages = Math.ceil(data.totalHits / limit);
                 currentPage++;
 
-                if (currentPage <= totalPages) {
-                    loadMoreEl.style.display = 'block';
-                } else {
-                    loadMoreEl.style.display = 'none';
-                }
+               if (currentPage <= totalPages) {
+  loadMoreEl.style.display = 'block';
+} else {
+  loadMoreEl.style.display = 'none';
+}
             } else {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
                 loadMoreEl.style.display = 'none';
             }
         })
-        .catch(error => console.log(error));
+    .catch(error => console.log(error));
 };
 
 console.log(fetchImages)
@@ -92,8 +92,8 @@ const formElSubmit = (event) => {
     event.preventDefault();
     page = 1;
     searchQuery = searchInput.value;
-    fetchImages();
     loadMoreEl.style.display = 'none';
+    fetchImages();
     loadMoreEl.style.textAlign = 'center';
     loadMoreEl.style.margin = '0 auto';
     loadMoreEl.style.display = 'block';
@@ -128,18 +128,26 @@ const render = (hits) => {
         imageLinkEl.appendChild(imageEl);
         cardEl.appendChild(imageLinkEl);
 
-        
-        
         infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
 
-        cardEl.append(imageEl, infoEl);
-        galleryEl.append(cardEl);
+        cardEl.append(infoEl);
+      galleryEl.append(cardEl);
+      
+      new SimpleLightbox('.img-link', {captionsData: 'alt', captionDelay: 200 });
     });
-
 };
 
 
+
+const loadMore = () => {
+  currentPage++; 
+  fetchImages(); 
+};
+
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
-loadMoreEl.addEventListener('click', formElSubmit);
+loadMoreEl.addEventListener('click', (event) => {
+  event.preventDefault();
+  loadMore();
+});
 
