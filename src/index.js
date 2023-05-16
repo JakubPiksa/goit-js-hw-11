@@ -140,6 +140,8 @@ const render = (hits) => {
 //lightbox
 
 //load more
+const loadMore =
+  function loadMoreEv() { };
 
 
 
