@@ -4,72 +4,142 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import "./index.css";
 import axios from "axios";
 
-//poszczególne funckcje importowane 
-import { fetchImages } from './fetchImages';
-import { createSearchParams } from './queryparams'; //parametry wyszukiwanych obrazów
-import { createInfoItem } from './photo-info';
-import { formElSubmit } from './form-element';
-import { render } from './photo-render';
-
 
 const formEl = document.getElementById('search-form');
-
+const searchInput = document.getElementById('search-input');
 const galleryEl = document.getElementById('image-gallery');
 const loadMoreEl = document.getElementById('load-more');
 const API_KEY = '36429050-2dd6aecce9383c2193efec34d';
 const API_URL = 'https://pixabay.com/api/?'
 const LIMIT = 40;
-const searchInput = document.getElementById('search-input');
-
 
 // kontrola paginacji i zapytań
-
+let searchQuery = '';
 let currentPage = 1;
 let totalPages = 0;
-let page = 1;
-let searchQuery = '';
 
 
-// wartiości wyszukiwanych obrazów
-console.log(createSearchParams);
+//parametry wyszukiwanych obrazów
 
-//funkcja znajdująca obrazy
-console.log(fetchImages);
+const createSearchParams = () => {
+    const params = new URLSearchParams({
+        key: API_KEY,
+        q: searchQuery,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        page: currentPage,
+        per_page: LIMIT,
+    });
+
+    return params.toString();
+};
 
 
 
 // funkcja tworząca informacje o zdjęciu
-console.log(createInfoItem);
+const createInfoItem = (label, value) => {
+    const itemEl = document.createElement('div');
+    itemEl.classList.add('info-item');
+
+    const labelEl = document.createElement('span');
+    labelEl.classList.add('label');
+    labelEl.textContent = label;
+
+    const valueEl = document.createElement('span');
+    valueEl.classList.add('value');
+    valueEl.textContent = value;
+
+    itemEl.append(labelEl, valueEl);
+
+    return itemEl;
+};
 
 
+// funkcja wyszukująca obrazy
+function fetchImages() {
+const URL = (API_URL + createSearchParams());
+
+    axios.get(URL)
+        .then(response => {
+            const data = response.data;
 
 
-// const loadMore()
-//                 if (currentPage <= totalPages) {
-//                     loadMoreEl.style.display = 'block';
-//                 } else {
-//                     loadMoreEl.style.display = 'none';
-//                 }
+            if (data.totalHits > 0) {
+                render(data.hits);
+                Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+                totalPages = Math.ceil(data.totalHits / LIMIT);
+                currentPage++;
 
+                if (currentPage <= totalPages) {
+                    loadMoreEl.style.display = 'block';
+                } else {
+                    loadMoreEl.style.display = 'none';
+                }
+            } else {
+                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                loadMoreEl.style.display = 'none';
+            }
+        })
+        .catch(error => console.log(error));
+};
+
+console.log(fetchImages)
 
 //obsługa formularza 
-console.log(formElSubmit)
+const formElSubmit = (event) => {
+    galleryEl.innerHTML = '';
+    event.preventDefault();
+    page = 1;
+    searchQuery = searchInput.value;
+    fetchImages();
+    loadMoreEl.style.display = 'none';
+    loadMoreEl.style.textAlign = 'center';
+    loadMoreEl.style.margin = '0 auto';
+    loadMoreEl.style.display = 'block';
+};
 //renderowanie zdjęcia
 
+const render = (hits) => {
+    galleryEl.innerHTML = '';
+    hits.forEach(hit => {
+        const cardEl = document.createElement('div');
+        cardEl.classList.add('photo-card');
 
-console.log(render)
+        const imageLinkEl = document.createElement('a');
+        imageLinkEl.classList.add('img-link');
+        imageLinkEl.href = hit.webformatURL;
+        imageLinkEl.title = hit.tags;
 
+        const imageEl = document.createElement('img');
+        imageEl.src = hit.webformatURL;
+        imageEl.alt = hit.tags;
+        imageEl.loading = 'lazy';
+        imageEl.classList.add('photo-image');
 
+        const infoEl = document.createElement('div');
+        infoEl.classList.add('info');
 
+        const likesEl = createInfoItem('Likes', hit.likes);
+        const viewsEl = createInfoItem('Views', hit.views);
+        const commentsEl = createInfoItem('Comments', hit.comments);
+        const downloadsEl = createInfoItem('Downloads', hit.downloads);
 
-//lightbox
-const lightbox = new SimpleLightbox('.img-link');
+        imageLinkEl.appendChild(imageEl);
+        cardEl.appendChild(imageLinkEl);
 
-//load more
+        
+        
+        infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
 
+        cardEl.append(imageEl, infoEl);
+        galleryEl.append(cardEl);
+    });
 
+};
 
 
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
-// loadMoreEl.addEventListener('click', loadMore);
+loadMoreEl.addEventListener('click', formElSubmit);
+
