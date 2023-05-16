@@ -46,6 +46,21 @@ const createInfoItem = (label, value) => {
   return itemEl;
 };
 
+const formElSubmit = (event) => {
+  event.preventDefault();
+  galleryEl.innerHTML = '';
+  currentPage = 1;
+  searchQuery = searchInput.value;
+  loadMoreEl.style.display = 'none';
+  loadMoreEl.style.textAlign = 'center';
+  loadMoreEl.style.margin = '0 auto';
+  loadMoreEl.style.display = 'block';
+  fetchImages();
+
+  console.log(formElSubmit);
+
+};
+
 const fetchImages = () => {
   const URL = API_URL + createSearchParams();
 
@@ -73,19 +88,12 @@ const fetchImages = () => {
       }
     })
     .catch((error) => console.log(error));
+  
+  console.log(fetchImages)
+  
 };
 
-const formElSubmit = (event) => {
-  event.preventDefault();
-  galleryEl.innerHTML = '';
-  currentPage = 1;
-  searchQuery = searchInput.value;
-  loadMoreEl.style.display = 'none';
-  loadMoreEl.style.textAlign = 'center';
-  loadMoreEl.style.margin = '0 auto';
-  loadMoreEl.style.display = 'block';
-  fetchImages();
-};
+
 
 const render = (hits) => {
   galleryEl.innerHTML = '';
@@ -109,7 +117,7 @@ const render = (hits) => {
 
     const likesEl = createInfoItem('Likes', hit.likes);
     const viewsEl = createInfoItem('Views', hit.views);
-     const commentsEl = createInfoItem('Comments', hit.comments);
+    const commentsEl = createInfoItem('Comments', hit.comments);
     const downloadsEl = createInfoItem('Downloads', hit.downloads);
 
     imageLinkEl.appendChild(imageEl);
@@ -121,6 +129,9 @@ const render = (hits) => {
     galleryEl.append(cardEl);
 
     new SimpleLightbox('.gallery a', {});
+
+    console.log(render);
+
   });
 };
 
@@ -129,10 +140,13 @@ const showMorePhotos = async () => {
   console.log(currentPage, totalPages);
   try {
     if (currentPage > totalPages) throw new Error("Reached the end of search results.");
-    fetchImages();
+    //fetchImages();
   } catch (error) {
     Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
   }
+  
+  console.log(showMorePhotos);
+
 };
 
 formEl.addEventListener('submit', formElSubmit);
@@ -145,3 +159,5 @@ loadMoreEl.addEventListener('click', (event) => {
 const loadMore = () => {
   showMorePhotos();
 };
+
+
