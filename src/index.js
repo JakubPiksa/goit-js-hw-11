@@ -145,7 +145,7 @@ const render = (hits) => {
 
 
 const loadMore = () => {
-  currentPage++; 
+  limit++; 
   fetchImages(); 
 };
 
