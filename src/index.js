@@ -48,7 +48,7 @@ const createInfoItem = (label, value) => {
 
 const formElSubmit = (event) => {
   event.preventDefault();
-  galleryEl.innerHTML = '';
+  //galleryEl.innerHTML = '';
   currentPage = 1;
   searchQuery = searchInput.value;
   loadMoreEl.style.display = 'none';
@@ -96,7 +96,7 @@ const fetchImages = () => {
 
 
 const render = (hits) => {
-  galleryEl.innerHTML = '';
+  //galleryEl.innerHTML = '';
   hits.forEach((hit) => {
     const cardEl = document.createElement('div');
     cardEl.classList.add('photo-card');
@@ -140,7 +140,7 @@ const showMorePhotos = async () => {
   console.log(currentPage, totalPages);
   try {
     if (currentPage > totalPages) throw new Error("Reached the end of search results.");
-    //fetchImages();
+    fetchImages();
   } catch (error) {
     Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
   }
