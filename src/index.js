@@ -17,7 +17,7 @@ const LIMIT = 40;
 let searchQuery = '';
 let currentPage = 1;
 let totalPages = 0;
-
+let page = 1;
 
 //parametry wyszukiwanych obrazów
 
@@ -127,8 +127,6 @@ const render = (hits) => {
 
         imageLinkEl.appendChild(imageEl);
         cardEl.appendChild(imageLinkEl);
-
-        
         
         infoEl.append(likesEl, viewsEl, commentsEl, downloadsEl);
 
@@ -139,8 +137,13 @@ const render = (hits) => {
 };
 
 
+const loadMore = () => {
+  currentPage++;
+  fetchImages();
+};
+
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
-loadMoreEl.addEventListener('click', formElSubmit);
+loadMoreEl.addEventListener('click', loadMore);
 
 
