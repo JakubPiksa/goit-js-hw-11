@@ -93,10 +93,10 @@ const formElSubmit = (event) => {
     page = 1;
     searchQuery = searchInput.value;
     loadMoreEl.style.display = 'none';
-    fetchImages();
     loadMoreEl.style.textAlign = 'center';
     loadMoreEl.style.margin = '0 auto';
-    loadMoreEl.style.display = 'block';
+  loadMoreEl.style.display = 'block';
+  fetchImages();
 };
 //renderowanie zdjęcia
 
@@ -143,6 +143,7 @@ const loadMore = () => {
   currentPage++; 
   fetchImages(); 
 };
+
 
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
