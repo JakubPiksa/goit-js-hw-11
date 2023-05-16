@@ -87,7 +87,7 @@ function fetchImages() {
 }
 
 
-//obsługa formularza 
+//obsługa formularza
 const formElSubmit = (event) => {
   galleryEl.innerHTML = '';
   event.preventDefault();
@@ -136,25 +136,34 @@ const render = (hits) => {
 
         cardEl.append(infoEl);
       galleryEl.append(cardEl);
-      
+
     new SimpleLightbox('.gallery a', {});
-    
+
     });
 };
 
 
 
-const loadMore = () => {
-  limit++; 
-  fetchImages(); 
+const showMorePhotos = async () => {
+  currentPage++;
+  console.log(currentPage, totalPages);
+  try {
+    if (currentPage > totalPages) throw new Error("Reached the end of search results.");
+    await fetchImages();
+  } catch (error) {
+    Notiflix.Notify.warning("We're sorry, but you've reached the end of search results.");
+  }
 };
-
 
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
+
 loadMoreEl.addEventListener('click', (event) => {
   event.preventDefault();
   loadMore();
 });
 
 
+const loadMore = () => {
+  showMorePhotos();
+};
