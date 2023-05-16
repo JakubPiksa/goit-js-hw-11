@@ -58,51 +58,56 @@ const createInfoItem = (label, value) => {
 
 // funkcja wyszukująca obrazy
 function fetchImages() {
-const URL = API_URL + createSearchParams();
+  const URL = API_URL + createSearchParams();
 
-  axios.get(URL)
-    .then(response => {
-            const data = response.data;
+  axios
+    .get(URL)
+    .then((response) => {
+      const data = response.data;
 
+      if (data.totalHits > 0) {
+        render(data.hits);
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        totalPages = Math.ceil(data.totalHits / limit);
+        currentPage++;
 
-            if (data.totalHits > 0) {
-                render(data.hits);
-                Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-                totalPages = Math.ceil(data.totalHits / limit);
-                currentPage++;
-
-               if (currentPage <= totalPages) {
-  loadMoreEl.style.display = 'block';
-} else {
-  loadMoreEl.style.display = 'none';
+        if (currentPage <= totalPages) {
+          loadMoreEl.style.display = 'block';
+        } else {
+          loadMoreEl.style.display = 'none';
+        }
+      } else {
+        Notiflix.Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+        loadMoreEl.style.display = 'none';
+      }
+    })
+    .catch((error) => console.log(error));
 }
-            } else {
-                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-                loadMoreEl.style.display = 'none';
-            }
-        })
-    .catch(error => console.log(error));
-};
+
 
 console.log(fetchImages)
 
 //obsługa formularza 
 const formElSubmit = (event) => {
-    galleryEl.innerHTML = '';
-    event.preventDefault();
-    page = 1;
-    searchQuery = searchInput.value;
-    loadMoreEl.style.display = 'none';
-    loadMoreEl.style.textAlign = 'center';
-    loadMoreEl.style.margin = '0 auto';
+  galleryEl.innerHTML = '';
+  event.preventDefault();
+  page = 1;
+  searchQuery = searchInput.value;
+  loadMoreEl.style.display = 'none';
+  loadMoreEl.style.textAlign = 'center';
+  loadMoreEl.style.margin = '0 auto';
   loadMoreEl.style.display = 'block';
   fetchImages();
 };
+
+
 //renderowanie zdjęcia
 
 const render = (hits) => {
-    galleryEl.innerHTML = '';
-    hits.forEach(hit => {
+  galleryEl.innerHTML = '';
+  hits.forEach((hit) => {
         const cardEl = document.createElement('div');
         cardEl.classList.add('photo-card');
 
@@ -133,11 +138,23 @@ const render = (hits) => {
         cardEl.append(infoEl);
       galleryEl.append(cardEl);
       
-      new SimpleLightbox('.img-link', {});
+    new SimpleLightbox('.img-link', {});
+    
+    checkImagesLoaded();
     });
 };
 
+// Funkcja sprawdzająca, czy wszystkie zdjęcia zostały załadowane
+const checkImagesLoaded = () => {
+  const images = galleryEl.querySelectorAll('.photo-image');
+  const imagesLoaded = Array.from(images).every((image) => image.complete);
 
+  if (imagesLoaded) {
+    loadMoreEl.style.display = 'block';
+  } else {
+    setTimeout(checkImagesLoaded, 100); // Sprawdź ponownie po 100 ms
+  }
+};
 
 const loadMore = () => {
   currentPage++; 
@@ -152,3 +169,8 @@ loadMoreEl.addEventListener('click', (event) => {
   loadMore();
 });
 
+
+// Wywołanie funkcji sprawdzającej po załadowaniu strony
+window.addEventListener('load', () => {
+  checkImagesLoaded();
+});
