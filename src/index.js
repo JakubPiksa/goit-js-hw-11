@@ -87,8 +87,6 @@ function fetchImages() {
 }
 
 
-console.log(fetchImages)
-
 //obsługa formularza 
 const formElSubmit = (event) => {
   galleryEl.innerHTML = '';
@@ -106,11 +104,12 @@ const formElSubmit = (event) => {
 //renderowanie zdjęcia
 
 const render = (hits) => {
+
+
   galleryEl.innerHTML = '';
   hits.forEach((hit) => {
         const cardEl = document.createElement('div');
         cardEl.classList.add('photo-card');
-
         const imageLinkEl = document.createElement('a');
         imageLinkEl.classList.add('img-link');
         imageLinkEl.href = hit.webformatURL;
@@ -140,21 +139,10 @@ const render = (hits) => {
       
     new SimpleLightbox('.gallery a', {});
     
-    checkImagesLoaded();
     });
 };
 
-// Funkcja sprawdzająca, czy wszystkie zdjęcia zostały załadowane
-const checkImagesLoaded = () => {
-  const images = galleryEl.querySelectorAll('.photo-image');
-  const imagesLoaded = Array.from(images).every((image) => image.complete);
 
-  if (imagesLoaded) {
-    loadMoreEl.style.display = 'block';
-  } else {
-    setTimeout(checkImagesLoaded, 100); // Sprawdź ponownie po 100 ms
-  }
-};
 
 const loadMore = () => {
   currentPage++; 
@@ -170,7 +158,3 @@ loadMoreEl.addEventListener('click', (event) => {
 });
 
 
-// Wywołanie funkcji sprawdzającej po załadowaniu strony
-window.addEventListener('load', () => {
-  checkImagesLoaded();
-});
