@@ -82,6 +82,7 @@ const URL = (API_URL + createSearchParams());
             }
         })
         .catch(error => console.log(error));
+    
 };
 
 console.log(fetchImages)
@@ -136,14 +137,12 @@ const render = (hits) => {
 
 };
 
+//lightbox
 
-const loadMore = () => {
-  currentPage++;
-  fetchImages();
-};
+//load more
+
+
 
 //obsługa zdarzenia
 formEl.addEventListener('submit', formElSubmit);
 loadMoreEl.addEventListener('click', loadMore);
-
-
