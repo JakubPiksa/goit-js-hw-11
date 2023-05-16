@@ -138,7 +138,7 @@ const render = (hits) => {
         cardEl.append(infoEl);
       galleryEl.append(cardEl);
       
-    new SimpleLightbox('.img-link', {});
+    new SimpleLightbox('.gallery a', {});
     
     checkImagesLoaded();
     });
